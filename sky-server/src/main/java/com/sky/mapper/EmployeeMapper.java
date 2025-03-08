@@ -14,7 +14,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据用户名查询员工
-     * @param username
+     * @param username要让他
      * @return
      */
     @Select("select * from employee where username = #{username}")
