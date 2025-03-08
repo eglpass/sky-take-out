@@ -13,8 +13,8 @@ import org.apache.ibatis.annotations.Update;
 public interface EmployeeMapper {
 
     /**
-     * 根据用户名查询员工
-     * @param username要让他
+     * 根据用户名查询员工太热特特人
+     * @param username
      * @return
      */
     @Select("select * from employee where username = #{username}")
