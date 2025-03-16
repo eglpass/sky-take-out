@@ -16,6 +16,7 @@ public class RedisConfiguration {
 
     @Bean
     public RedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        // 创建RedisTemplate对象
         log.info("开始配置RedisTemplate");
         RedisTemplate redisTemplate = new RedisTemplate();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
