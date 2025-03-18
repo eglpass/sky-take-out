@@ -20,6 +20,7 @@ public class OrderOverViewVO implements Serializable {
 
     //待派送数量
     private Integer deliveredOrders;
+    //热舞1
 
     //已完成数量
     private Integer completedOrders;
