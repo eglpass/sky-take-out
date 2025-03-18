@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -21,6 +22,7 @@ import com.sky.service.OrderService;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -33,7 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +51,8 @@ public class OrderServiceImpl implements OrderService {
     private AddressBookMapper addressBookMapper;
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
     /**
      * 用户下单
      * @param ordersSubmitDTO
@@ -114,8 +120,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void paySuccess(String orderNumber, Integer payType) {
         log.info("订单支付成功，订单号：{}",orderNumber);
-
         orderMapper.updateStatusByNumber(orderNumber,payType,Orders.TO_BE_CONFIRMED);
+        log.info("订单状态：{}",Orders.TO_BE_CONFIRMED);
+        Map map =new HashMap();
+        map.put("type","1");
+        map.put("orderId",orderNumber);
+        map.put("content","订单1号："+orderNumber);
+        String jsonString = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(jsonString);
     }
 
 
@@ -395,5 +407,23 @@ public class OrderServiceImpl implements OrderService {
         orders1.setId(id);
         orders1.setStatus(Orders.COMPLETED);
         orderMapper.update(orders1);
+    }
+
+    /**
+     *
+     * @param id
+     */
+    @Override
+    public void remind(Long id) {
+        Orders orders = orderMapper.getById(id);
+        if(orders.getStatus() != Orders.TO_BE_CONFIRMED){
+            throw new OrderBusinessException("订单状态不正确");
+        }
+        Map map= new HashMap();
+
+        map.put("type",2);
+        map.put("orderId",id);
+        map.put("content","订单号"+orders.getNumber());
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 }

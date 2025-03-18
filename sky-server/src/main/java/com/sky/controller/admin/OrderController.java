@@ -11,11 +11,14 @@ import com.sky.service.OrderService;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController("adminOrderController")
 @RequestMapping("/admin/order" )
+@Slf4j
 public class OrderController {
     @Autowired
     private OrderService orderService;
@@ -46,6 +49,7 @@ public class OrderController {
     @GetMapping("/details/{id}")
     @ApiOperation("查询订单详情")
     public Result<OrderVO> details(@PathVariable("id") Long id) {
+        log.info("查询订单详情：{}=============================================", id);
         OrderVO orderVO = orderService.getById(id);
         return Result.success(orderVO);
     }

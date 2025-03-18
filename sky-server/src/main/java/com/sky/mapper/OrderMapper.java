@@ -8,7 +8,10 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper {
@@ -23,7 +26,7 @@ public interface OrderMapper {
      */
     Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
-    @Select("select * from orders where id = #{id}")
+    @Select("select * from orders where id = #{id} or number = #{id}")
     Orders getById(Long id);
 
     void update(Orders order);
@@ -34,4 +37,12 @@ public interface OrderMapper {
      */
     @Select("select count(id) from orders where status = #{status}")
     Integer countStatus(Integer status);
+
+    @Select("select * from orders where status = #{status} and order_time < #{time}")
+    List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime time);
+
+
+    Double sumByMap(Map map);
+
+    Integer countByMap(Map map);
 }
